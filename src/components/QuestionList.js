@@ -6,58 +6,56 @@ function QuestionList() {
 
   useEffect(() => {
     fetch("http://localhost:4000/questions")
-      .then((res) => res.json())
-      .then((data) => {
-        setQuestions(data);
+      .then((r) => r.json())
+      .then((questions) => {
+        setQuestions(questions);
       });
   }, []);
-  //deleting
-  const handleDeleteClick = (id) => {
+
+  function handleDeleteClick(id) {
     fetch(`http://localhost:4000/questions/${id}`, {
       method: "DELETE",
     })
-      .then((res) => res.json())
+      .then((r) => r.json())
       .then(() => {
-        const updateDeleteuestions = questions.filter(
-          (quizes) => quizes.id !== id
-        );
-        setQuestions(updateDeleteuestions);
+        const updatedQuestions = questions.filter((q) => q.id !== id);
+        setQuestions(updatedQuestions);
       });
-  };
-  const handleAnswerChange = (id, correctIndex) => {
+  }
+
+  function handleAnswerChange(id, correctIndex) {
     fetch(`http://localhost:4000/questions/${id}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({correctIndex})
-              })
-        .then(res => res.json())
-        .then(updatequiz => {
-          const updatequestion = questions.map((qui) => {
-            if (qui.id === updatequiz.id) return updatequiz;
+      body: JSON.stringify({ correctIndex }),
+    })
+      .then((r) => r.json())
+      .then((updatedQuestion) => {
+        const updatedQuestions = questions.map((q) => {
+          if (q.id === updatedQuestion.id) return updatedQuestion;
+          return q;
+        });
+        setQuestions(updatedQuestions);
+      });
+  }
 
-            return qui;
-          });
-          setQuestions(updatequestion);
-    });
-  };
-
-  const questionitems = questions.map((quiz) => (
+  const questionItems = questions.map((q) => (
     <QuestionItem
-      key={quiz.id}
-      question={quiz}
-      onDeleteItem={handleDeleteClick}
-      onAnswerSelect={handleAnswerChange}
+      key={q.id}
+      question={q}
+      onDeleteClick={handleDeleteClick}
+      onAnswerChange={handleAnswerChange}
     />
   ));
 
   return (
     <section>
       <h1>Quiz Questions</h1>
-      <ul>{questionitems}</ul>
+      <ul>{questionItems}</ul>
     </section>
   );
 }
 
-export default QuestionList;w
+export default QuestionList;
